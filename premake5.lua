@@ -1,39 +1,43 @@
-project "assimp"
-    kind "StaticLib"
-    language "C++"
-	cppdialect "C++17"
-    staticruntime "On"
-    
-	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
-    objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
-
-	files
-	{
-        "include/assimp/**.h",
-		"include/assimp/**.h.in",
-		"include/assimp/**.cpp",
-		"include/assimp/Compiler/**.h",
-		"code/Obj/**.h",
-		"code/Obj/**.cpp",
-		"code/CApi/**.h",
-		"code/CApi/**.cpp",
-		"code/Common/**.h",
-		"code/Common/**.cpp"
-    }
-    
-	includedirs
-	{
-		"include"
+project "Assimp"
+	kind "StaticLib"
+	location "build/"
+	defines {
+		"ASSIMP_BUILD_NO_C4D_IMPORTER", -- Cinema4D is MSVC only and needs some weird headers to work
+		"OPENDDL_STATIC_LIBARY",
 	}
-	
-	filter "system:windows"
-        systemversion "latest"
-		
-	filter "configurations:Debug"
-		runtime "Debug"
-		symbols "on"
+	files {
+		"assimp/code/**.cpp",
+		"assimp/code/**.h",
+		"assimp/contrib/irrXML/*.cpp",
+		"assimp/contrib/irrXML/*.h",
+		"assimp/contrib/unzip/*.c",
+		"assimp/contrib/unzip/*.h",
+		"assimp/contrib/zlib/*.c",
+		"assimp/contrib/openddlparser/code/*.cpp",
+		"assimp/contrib/poly2tri/poly2tri/**.cc",
+		"assimp/contrib/clipper/*.cpp",
+	}
+	includedirs {
+		"assimp/include/",
+		"assimp/contrib/irrXML/",
+		"assimp/contrib/rapidjson/include/",
+		"assimp/contrib/openddlparser/include/",
+		"assimp/contrib/unzip/",
+		"assimp/",
+		"zlib/",
+	}
+	removefiles {
+		"assimp/code/Importer/IFC/IFCReaderGen_4.*",
+	}
 
-	filter "configurations:Release"
-		runtime "Release"
-		optimize "on"
+	filter "system:windows"
+		buildoptions {
+			"/bigobj",
+		}
+		defines {
+			"_CRT_SECURE_NO_WARNINGS",
+		}
+		disablewarnings {
+			"4065",
+		}
 		
